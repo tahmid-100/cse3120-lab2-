@@ -1,0 +1,230 @@
+
+
+//roll 2007100
+
+
+interface TV {
+    boolean isPowered();
+
+    void powerOn();
+
+    void powerOff();
+
+    int getVolume();
+
+    void setVolume(int newVolume);
+
+    int getChannel();
+
+    void setChannel(int newChannel);
+}
+
+class SmartTV implements TV {
+    private boolean powerOn = false;
+    private int volume = 50;
+    private int channel = 2;
+
+    @Override
+    public boolean isPowered() {
+        return powerOn;
+    }
+
+    @Override
+    public void powerOn() {
+        powerOn = true;
+    }
+
+    @Override
+    public void powerOff() {
+        powerOn = false;
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
+    }
+
+    @Override
+    public void setVolume(int newVolume) {
+        volume = newVolume;
+    }
+
+    @Override
+    public int getChannel() {
+        return channel;
+    }
+
+    @Override
+    public void setChannel(int newChannel) {
+        channel = newChannel;
+    }
+
+    public void playYoutube(YoutubeProxy youtubeProxy) {
+        System.out.println("Playing YouTube on SmartTV");
+        youtubeProxy.runYoutube();
+    }
+}
+
+class RegularTV implements TV {
+    private boolean powerOn = false;
+    private int volume = 30;
+    private int channel = 2;
+
+    @Override
+    public boolean isPowered() {
+        return powerOn;
+    }
+
+    @Override
+    public void powerOn() {
+        powerOn = true;
+    }
+
+    @Override
+    public void powerOff() {
+        powerOn = false;
+    }
+
+    @Override
+    public int getVolume() {
+        return volume;
+    }
+
+    @Override
+    public void setVolume(int newVolume) {
+        volume = newVolume;
+    }
+
+    @Override
+    public int getChannel() {
+        return channel;
+    }
+
+    @Override
+    public void setChannel(int newChannel) {
+        channel = newChannel;
+    }
+}
+
+class RemoteControl {
+    protected TV tv;
+
+    RemoteControl() {
+        tv = null;
+    }
+
+    RemoteControl(TV tv) {
+        this.tv = tv;
+    }
+
+    public void togglePower() {
+        if (tv.isPowered()) {
+            tv.powerOff();
+            System.out.println("Power turned off");
+        } else {
+            tv.powerOn();
+            System.out.println("Power turned on");
+        }
+    }
+
+    public void increaseVolume() {
+        if (tv.isPowered()) {
+            tv.setVolume(tv.getVolume() + 5);
+            System.out.println("Increasing volume +5");
+        } else {
+            System.out.println("Please turn on TV first");
+        }
+    }
+
+    public void decreaseVolume() {
+        if (tv.isPowered()) {
+            tv.setVolume(tv.getVolume() - 5);
+            System.out.println("Decreasing volume -5");
+        } else {
+            System.out.println("Please turn on TV first");
+        }
+    }
+
+    public void increaseChannel() {
+        if (tv.isPowered()) {
+            tv.setChannel(tv.getChannel() + 1);
+            System.out.println("Channel +1");
+        } else {
+            System.out.println("Please turn on TV first");
+        }
+    }
+
+    public void decreaseChannel() {
+        if (tv.isPowered()) {
+            tv.setChannel(tv.getChannel() - 1);
+            System.out.println("Channel -1");
+        } else {
+            System.out.println("Please turn on TV first");
+        }
+    }
+}
+
+class SmartRemoteControl extends RemoteControl {
+    SmartRemoteControl() {
+    }
+
+    SmartRemoteControl(TV tv) {
+        super(tv);
+    }
+
+    void showYoutube(YoutubeProxy youtubeProxy) {
+        ((SmartTV) tv).playYoutube(youtubeProxy);
+    }
+}
+
+interface YoutubeProxy {
+    void runYoutube();
+}
+
+class FirstLoadYoutube implements YoutubeProxy {
+    @Override
+    public void runYoutube() {
+        System.out.println("Running YouTube");
+    }
+}
+
+class ProxyLoadYoutube implements YoutubeProxy {
+    private FirstLoadYoutube firstLoadYoutube;
+
+    @Override
+    public void runYoutube() {
+        if (firstLoadYoutube == null) {
+            firstLoadYoutube = new FirstLoadYoutube();
+            System.out.println("Starting YouTube");
+        }
+        firstLoadYoutube.runYoutube();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        RegularTV regularTV = new RegularTV();
+        RemoteControl remoteControl = new RemoteControl(regularTV);
+        remoteControl.togglePower();
+        remoteControl.increaseVolume();
+        remoteControl.increaseChannel();
+        remoteControl.decreaseChannel();
+        remoteControl.decreaseVolume();
+
+        System.out.println();
+
+        SmartTV smartTV = new SmartTV();
+        SmartRemoteControl smartRemoteControl = new SmartRemoteControl(smartTV);
+        smartRemoteControl.togglePower();
+        smartRemoteControl.increaseVolume();
+        smartRemoteControl.increaseChannel();
+        smartRemoteControl.decreaseChannel();
+        smartRemoteControl.decreaseVolume();
+
+        System.out.println();
+
+        YoutubeProxy youtubeProxy = new ProxyLoadYoutube();
+        smartRemoteControl.showYoutube(youtubeProxy);
+        smartRemoteControl.showYoutube(youtubeProxy);
+    }
+}
